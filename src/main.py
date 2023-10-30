@@ -1,5 +1,4 @@
 import cv2
-import matplotlib.pyplot as plt
 
 imgPath = 'img/id.jpg'
 img = cv2.imread(imgPath)
