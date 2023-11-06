@@ -3,12 +3,23 @@ import numpy as np
 
 def main():
     selfie = cv2.imread('vangen99.jpg')
-    template_id = cv2.imread('template.jpg')
-    id = cv2.imread('uia.jpg')
+    id = cv2.imread('id.jpg')
+    type = input("Which type of ID do you want to use? For Passport type 1, Drivers license type 2, or ID card type 3: ")
+    if type == "1":
+        template_id = cv2.imread('passport_template.jpg')
+    elif type == "2":
+        template_id = cv2.imread('template.jpg')
+    elif type == "3":
+        template_id = cv2.imread('id_card_template.png')
+    else:
+        print("Invalid ID type selected. Using the default template.")
+        return -1
+    #template_id = cv2.imread('template.jpg')
     quality(selfie)
     good_match_precent = 0.15
     max_features = 2500
     imReg, h = align(id, template_id, max_features, good_match_precent)
+
     print("Estimated homography : \n", h)
     cv2.imshow("Aligned", imReg)  # Display the aligned image
     #cv2.imshow("matches", align(id, template_id, max_features, good_match_precent))
