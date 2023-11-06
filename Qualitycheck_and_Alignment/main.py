@@ -39,7 +39,7 @@ def align(id, template_id, max_features, good_match_precent):
     numGoodMatches = int(len(matches) * good_match_precent)
     matches = matches[:numGoodMatches]
     imMatches = cv2.drawMatches(id, keypoints1, template_id, keypoints2, matches, None)
-    cv2.imwrite("matches.jpg", imMatches)
+    #cv2.imwrite("matches.jpg", imMatches)
     points1 = np.zeros((len(matches), 2), dtype=np.float32)
     points2 = np.zeros((len(matches), 2), dtype=np.float32)
     for i, match in enumerate(matches):
