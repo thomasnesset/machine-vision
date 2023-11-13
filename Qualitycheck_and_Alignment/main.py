@@ -2,22 +2,26 @@ import cv2
 import numpy as np
 
 def main():
-    selfie = cv2.imread('vangen99.jpg')
-    id = cv2.imread('id.jpg')
+    selfie = cv2.imread('WIN_20231016_11_29_08_Pro.jpg')
+    #id = cv2.imread('id.jpg')
     type = input("Which type of ID do you want to use? For Passport type 1, Drivers license type 2, or ID card type 3: ")
     if type == "1":
+        id = cv2.imread('passs.jpg')
         template_id = cv2.imread('passport_template.jpg')
     elif type == "2":
         template_id = cv2.imread('template.jpg')
+        id = cv2.imread('id.jpg')
     elif type == "3":
+        id = cv2.imread('id_kort.png')
         template_id = cv2.imread('id_card_template.png')
     else:
         print("Invalid ID type selected. Using the default template.")
         return -1
-    #template_id = cv2.imread('template.jpg')
+    #template_id = cv2.imread('id_card_template.png')
     quality(selfie)
+    variabel = quality(id)
     good_match_precent = 0.15
-    max_features = 2500
+    max_features = 10000
     imReg, h = align(id, template_id, max_features, good_match_precent)
 
     print("Estimated homography : \n", h)
@@ -50,23 +54,22 @@ def align(id, template_id, max_features, good_match_precent):
     im1Reg = cv2.warpPerspective(id, h, (width, height))
     return im1Reg, h
 
-def quality(selfie):
-    # Define quality requirements
-    min_width = 1000
-    min_height = 700
-    max_sharpness = 75  # Adjusted for lower sharpness
 
-    # Check selfie quality
-    height, width, _ = selfie.shape
-    laplacian = cv2.Laplacian(cv2.cvtColor(selfie, cv2.COLOR_BGR2GRAY), cv2.CV_64F)
+def quality(image):
+    min_width = 1500
+    min_height = 1200
+    max_sharpness = 700
+
+    height, width, _ = image.shape
+    laplacian = cv2.Laplacian(cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), cv2.CV_64F)
     sharpness = laplacian.var()
     print("Sharpness:", sharpness)
-
-    # Compare to requirements
     if width >= min_width and height >= min_height and sharpness <= max_sharpness:
-        print("selfie quality meets the requirements.")
+        print("Image quality meets the requirements.")
+        return True
     else:
-        print("selfie quality does not meet the requirements.")
+        print("Image quality does not meet the requirements.")
+        return False
 
 if __name__ == "__main__":
     main()
