@@ -1,0 +1,46 @@
+import cv2
+import numpy as np
+
+
+def match_orb(image, ref_image, max_features, num_matches, debug=False):
+    """Match images using ORB.
+
+    Args:
+        image: The image to match.
+        ref_image: The reference image to match against.
+        max_features: The maximum number of features to detect.
+        num_matches: The number of matches to use.
+        debug: Whether to write the image with matches to disk. Defaults to False.
+    Returns:
+        The ratio of matched keypoints to total keypoints.
+    """
+    image1_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    image2_gray = cv2.cvtColor(ref_image, cv2.COLOR_BGR2GRAY)
+
+    orb = cv2.ORB_create(max_features)
+    keypoints1, descriptors1 = orb.detectAndCompute(image1_gray, None)
+    keypoints2, descriptors2 = orb.detectAndCompute(image2_gray, None)
+
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    matches = bf.match(descriptors1, descriptors2, None)
+
+    matches = sorted(matches, key=lambda x: x.distance)
+
+    good_matches = int(len(matches) * num_matches)
+    matches = matches[:good_matches]
+
+    src_pts = np.float32([keypoints1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
+    dst_pts = np.float32([keypoints2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
+
+    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC)
+    ratio = float(mask.sum()) / mask.size
+
+    if debug:
+        print(f"DEBUG: Matching ratio: {ratio}")
+        matched_image = cv2.drawMatches(
+            image, keypoints1, ref_image, keypoints2, matches, None
+        )
+        print(f"DEBUG: Writing image with matches to 'match_orb-debug.jpg'")
+        cv2.imwrite("match_orb-debug.jpg", matched_image)
+
+    return ratio
