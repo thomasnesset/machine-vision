@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-def match_orb(image, ref_image, max_features, num_matches, debug=False):
+def match_orb(image, ref_image, max_features, num_matches, debug=None):
     """Match images using ORB.
 
     Args:
@@ -10,7 +10,7 @@ def match_orb(image, ref_image, max_features, num_matches, debug=False):
         ref_image: The reference image to match against.
         max_features: The maximum number of features to detect.
         num_matches: The number of matches to use.
-        debug: Whether to write the image with matches to disk. Defaults to False.
+        debug: The filename to write the debug image to. Defaults to None.
     Returns:
         The ratio of matched keypoints to total keypoints.
     """
@@ -36,11 +36,12 @@ def match_orb(image, ref_image, max_features, num_matches, debug=False):
     ratio = float(mask.sum()) / mask.size
 
     if debug:
+        debug_filename = f"match_orb-{debug}"
         print(f"DEBUG: Matching ratio: {ratio}")
         matched_image = cv2.drawMatches(
             image, keypoints1, ref_image, keypoints2, matches, None
         )
-        print(f"DEBUG: Writing image with matches to 'match_orb-debug.jpg'")
-        cv2.imwrite("match_orb-debug.jpg", matched_image)
+        print(f"DEBUG: Writing image with matches to '{debug_filename}'")
+        cv2.imwrite(debug_filename, matched_image)
 
     return ratio
