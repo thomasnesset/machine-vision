@@ -8,6 +8,7 @@ import cv2
 import cli
 import image_verification
 import match
+import recognition
 
 
 if __name__ == "__main__":
@@ -39,6 +40,12 @@ if __name__ == "__main__":
         if matched_id.__len__() == 0:
             print("Could not match ID.", file=sys.stderr)
             exit(1)
+
+        match = recognition.match_id_face(args.id_image)
+        if match:
+            print("ID matches person!")
+        else:
+            print("ID does not match person!")
 
         best_match = max(matched_id, key=lambda x: x["score"])
         print(f"ID matched with [{best_match['filename'].name}]")
