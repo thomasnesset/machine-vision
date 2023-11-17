@@ -1,3 +1,6 @@
+from pathlib import Path
+import sys
+
 import cv2
 import numpy as np
 
@@ -45,3 +48,21 @@ def match_orb(image, ref_image, max_features, num_matches, debug=None):
         cv2.imwrite(debug_filename, matched_image)
 
     return ratio
+
+
+def match_id(image):
+    template_path = Path("images/templates")
+    files = [file for file in template_path.iterdir() if file.is_file()]
+
+    matched_id = []
+    for file in files:
+        template = cv2.imread(str(file))
+        score = match_orb(image, template, 100, 10)
+        print(f"template: {str(file)}, Score: {score}")
+        if score >= 0.3:
+            matched_id.append({"filename": file, "score": score})
+
+    if matched_id.__len__() == 0:
+        print("Could not match ID.", file=sys.stderr)
+        return None
+    return max(matched_id, key=lambda x: x["score"])
