@@ -9,6 +9,7 @@ import cli
 import image_verification
 import match
 import recognition
+import app
 
 
 if __name__ == "__main__":
