@@ -37,10 +37,12 @@ class App:
         shutil.copy(file_path, destination_path)
 
         if file_path:
-            if match.match_id("./id.jpg"):
+            image = cv2.imread(destination_path)
+            if match.match_id(image):
                 self.button_snapshot.config(state=tk.NORMAL)
                 self.label.config(text="ID is valid")
             else:
+                self.button_snapshot.config(state=tk.DISABLED)
                 self.label.config(text="ID not valid")
 
     def take_snapshot(self):
