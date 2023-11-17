@@ -55,7 +55,7 @@ class App:
 
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
 
-        snapshot_path = "./snapshot.png"
+        snapshot_path = "./snapshot.jpg"
         image.save(snapshot_path)
 
         result = recognition.match_face("./id.jpg", "./snapshot.jpg")
