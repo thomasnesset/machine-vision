@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import shutil
 import cv2
+import time
 from PIL import Image, ImageTk
 
 class WebcamApp:
@@ -31,10 +32,6 @@ class WebcamApp:
         # Create a button to take a snapshot
         self.button_snapshot = tk.Button(self.button_frame, text="Take Snapshot", command=self.take_snapshot)
         self.button_snapshot.pack(side=tk.LEFT, padx=10)
-
-        # Create a text box to display the result
-        self.result_text = tk.Text(window, height=1, width=30)
-        self.result_text.pack(pady=10)
 
         # After initializing the GUI components, start the webcam feed
         self.update()
@@ -74,13 +71,17 @@ class WebcamApp:
         result = self.check_id_match(snapshot_path)
 
         # Update the result text
-        self.result_text.delete(1.0, tk.END)
-        self.result_text.insert(tk.END, "ID Match: " + str(result))
+        if result:
+            self.label.config(text="ID matches!")
+        else:
+            self.label.config(text="ID does not match!")
 
     def check_id_match(self, snapshot_path):
+        self.label.config(text="Processing...")
         # Replace this function with your actual implementation to check if the ID matches the person
         # This is just a placeholder
         # You can use face recognition libraries or any other method to perform the actual matching
+        time.sleep(2)
         return True
 
     def update(self):
@@ -106,7 +107,7 @@ class WebcamApp:
 
 # Create the main window and the WebcamApp instance
 app_window = tk.Tk()
-app = WebcamApp(app_window, "Webcam App")
+app = WebcamApp(app_window, "Identity Verification")
 
 # Start the main loop
 app_window.mainloop()
