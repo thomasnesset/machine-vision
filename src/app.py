@@ -33,17 +33,15 @@ class App:
 
     def open_file_dialog(self):
         file_path = filedialog.askopenfilename()
-        
-        # Check if ID is valid
+        destination_path = "./id.jpg"
+        shutil.copy(file_path, destination_path)
 
         if file_path:
-            destination_path = "./id.jpg"
-            shutil.copy(file_path, destination_path)
-            
-            self.button_snapshot.config(state=tk.NORMAL)
-            self.label.config(text="ID is valid")
-        else:
-            self.label.config(text="ID not valid")
+            if match.match_id("./id.jpg"):
+                self.button_snapshot.config(state=tk.NORMAL)
+                self.label.config(text="ID is valid")
+            else:
+                self.label.config(text="ID not valid")
 
     def take_snapshot(self):
         ret, frame = self.cap.read()
