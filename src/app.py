@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-import shutil  # Import the shutil module for file operations
+import shutil
 import cv2
 from PIL import Image, ImageTk
 
@@ -25,12 +25,16 @@ class WebcamApp:
         self.button_frame.pack(pady=10)
 
         # Create a button to open the file dialog
-        self.button_upload = tk.Button(self.button_frame, text="Upload File", command=self.open_file_dialog)
+        self.button_upload = tk.Button(self.button_frame, text="Upload ID", command=self.open_file_dialog)
         self.button_upload.pack(side=tk.LEFT, padx=10)
 
         # Create a button to take a snapshot
         self.button_snapshot = tk.Button(self.button_frame, text="Take Snapshot", command=self.take_snapshot)
         self.button_snapshot.pack(side=tk.LEFT, padx=10)
+
+        # Create a text box to display the result
+        self.result_text = tk.Text(window, height=1, width=30)
+        self.result_text.pack(pady=10)
 
         # After initializing the GUI components, start the webcam feed
         self.update()
@@ -66,8 +70,18 @@ class WebcamApp:
         snapshot_path = "./snapshot.png"
         image.save(snapshot_path)
 
-        # Display the snapshot file path in the label
-        self.label.config(text="Snapshot saved: " + snapshot_path)
+        # Check if the ID matches the person in the snapshot (replace this with your actual function)
+        result = self.check_id_match(snapshot_path)
+
+        # Update the result text
+        self.result_text.delete(1.0, tk.END)
+        self.result_text.insert(tk.END, "ID Match: " + str(result))
+
+    def check_id_match(self, snapshot_path):
+        # Replace this function with your actual implementation to check if the ID matches the person
+        # This is just a placeholder
+        # You can use face recognition libraries or any other method to perform the actual matching
+        return True
 
     def update(self):
         # Get a frame from the webcam
