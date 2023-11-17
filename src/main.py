@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if args.id_image:
         if not Path(args.id_image).is_file():
             print(f"File [{args.id_image}] not found.", file=sys.stderr)
-            exit(1)
+            exit()
         have_id = True
 
     if have_id:
@@ -28,7 +28,7 @@ if __name__ == "__main__":
         image = cv2.imread(args.id_image)
         if not image_verification.quality(image):
             print("Image quality for ID card is too low.", file=sys.stderr)
-            exit(1)
+            exit()
 
         for file in files:
             template = cv2.imread(str(file))
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
         if matched_id.__len__() == 0:
             print("Could not match ID.", file=sys.stderr)
-            exit(1)
+            exit()
 
         match = recognition.match_id_face(args.id_image)
         if match:
