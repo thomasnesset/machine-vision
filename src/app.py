@@ -1,98 +1,86 @@
 import tkinter as tk
 from tkinter import filedialog
-import shutil  # Import the shutil module for file operations
+import shutil
 import cv2
 from PIL import Image, ImageTk
 
-class WebcamApp:
+import match
+import recognition
+
+class App:
     def __init__(self, window, window_title):
         self.window = window
         self.window.title(window_title)
 
-        # Open the default camera (index 0)
         self.cap = cv2.VideoCapture(0)
 
-        # Create a canvas to display the webcam feed
         self.canvas = tk.Canvas(window, width=self.cap.get(3), height=self.cap.get(4))
         self.canvas.pack()
 
-        # Create a label to display the selected file path
         self.label = tk.Label(window, text="No file selected", padx=10, pady=10)
         self.label.pack()
 
-        # Create a frame to center the buttons
         self.button_frame = tk.Frame(window)
         self.button_frame.pack(pady=10)
 
-        # Create a button to open the file dialog
-        self.button_upload = tk.Button(self.button_frame, text="Upload File", command=self.open_file_dialog)
+        self.button_upload = tk.Button(self.button_frame, text="Upload ID", command=self.open_file_dialog)
         self.button_upload.pack(side=tk.LEFT, padx=10)
 
-        # Create a button to take a snapshot
-        self.button_snapshot = tk.Button(self.button_frame, text="Take Snapshot", command=self.take_snapshot)
+        self.button_snapshot = tk.Button(self.button_frame, text="Take Snapshot", command=self.take_snapshot, state=tk.DISABLED)
         self.button_snapshot.pack(side=tk.LEFT, padx=10)
 
-        # After initializing the GUI components, start the webcam feed
         self.update()
 
     def open_file_dialog(self):
         file_path = filedialog.askopenfilename()
+        destination_path = "./id.jpg"
+        shutil.copy(file_path, destination_path)
 
         if file_path:
-            # Copy the selected file to the current working directory
-            filename = file_path.split("/")[-1]  # Extract the filename
-            destination_path = "./" + filename  # Destination path in the current directory
-            shutil.copy(file_path, destination_path)
-
-            self.label.config(text="File Path: " + destination_path)
-        else:
-            self.label.config(text="No file selected")
+            image = cv2.imread(destination_path)
+            if match.match_id(image):
+                self.button_snapshot.config(state=tk.NORMAL)
+                self.label.config(text="ID is valid")
+            else:
+                self.button_snapshot.config(state=tk.DISABLED)
+                self.label.config(text="ID not valid")
 
     def take_snapshot(self):
-        # Capture a single frame
         ret, frame = self.cap.read()
 
-        # Convert the frame from BGR to RGB
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Create a PIL ImageTk object from the frame
         image = Image.fromarray(frame_rgb)
         self.photo = ImageTk.PhotoImage(image)
 
-        # Display the snapshot on the canvas
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
 
-        # Save the snapshot to a file in the current working directory (you can customize the filename)
-        snapshot_path = "./snapshot.png"
+        snapshot_path = "./snapshot.jpg"
         image.save(snapshot_path)
 
-        # Display the snapshot file path in the label
-        self.label.config(text="Snapshot saved: " + snapshot_path)
+        result = recognition.match_face("./id.jpg", "./snapshot.jpg")
+
+        if result:
+            self.label.config(text="ID matches!")
+        else:
+            self.label.config(text="ID does not match!")
 
     def update(self):
-        # Get a frame from the webcam
         ret, frame = self.cap.read()
 
-        # Convert the frame from BGR to RGB
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Create a PIL ImageTk object from the frame
         self.photo = ImageTk.PhotoImage(Image.fromarray(frame_rgb))
 
-        # Update the canvas with the new frame
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.photo)
 
-        # Schedule the update method to be called after 10 milliseconds
         self.window.after(10, self.update)
 
     def __del__(self):
-        # Release the camera when the object is deleted
         if self.cap.isOpened():
             self.cap.release()
 
-# Create the main window and the WebcamApp instance
 app_window = tk.Tk()
-app = WebcamApp(app_window, "Webcam App")
+app = App(app_window, "Identity Verification")
 
-# Start the main loop
 app_window.mainloop()
