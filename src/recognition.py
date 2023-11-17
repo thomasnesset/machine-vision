@@ -1,6 +1,6 @@
 import face_recognition
 
-def match(id_, snapshot_):
+def match_face(id_, snapshot_):
     
     id = face_recognition.load_image_file(id_)
     id_face_enc = face_recognition.face_encodings(id)[0]

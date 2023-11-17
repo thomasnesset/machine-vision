@@ -35,7 +35,7 @@ if __name__ == "__main__":
             template = cv2.imread(str(file))
             score = match.match_orb(image, template, 100, 10)
             print(f"template: {str(file)}, Score: {score}")
-            if score >= 0.5:
+            if score >= 0.3:
                 matched_id.append({"filename": file, "score": score})
 
         if matched_id.__len__() == 0:

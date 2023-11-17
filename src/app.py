@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import filedialog
 import shutil
 import cv2
-import recognition
 from PIL import Image, ImageTk
+
+import match
+import recognition
 
 class App:
     def __init__(self, window, window_title):
@@ -24,21 +26,24 @@ class App:
         self.button_upload = tk.Button(self.button_frame, text="Upload ID", command=self.open_file_dialog)
         self.button_upload.pack(side=tk.LEFT, padx=10)
 
-        self.button_snapshot = tk.Button(self.button_frame, text="Take Snapshot", command=self.take_snapshot)
+        self.button_snapshot = tk.Button(self.button_frame, text="Take Snapshot", command=self.take_snapshot, state=tk.DISABLED)
         self.button_snapshot.pack(side=tk.LEFT, padx=10)
 
         self.update()
 
     def open_file_dialog(self):
         file_path = filedialog.askopenfilename()
+        
+        # Check if ID is valid
 
         if file_path:
             destination_path = "./id.jpg"
             shutil.copy(file_path, destination_path)
-
-            self.label.config(text="ID loaded")
+            
+            self.button_snapshot.config(state=tk.NORMAL)
+            self.label.config(text="ID is valid")
         else:
-            self.label.config(text="No file selected")
+            self.label.config(text="ID not valid")
 
     def take_snapshot(self):
         ret, frame = self.cap.read()
@@ -53,17 +58,12 @@ class App:
         snapshot_path = "./snapshot.png"
         image.save(snapshot_path)
 
-        result = self.check_id_match()
+        result = recognition.match_face("./id.jpg", "./snapshot.jpg")
 
         if result:
             self.label.config(text="ID matches!")
         else:
             self.label.config(text="ID does not match!")
-
-    def check_id_match(self):
-        self.label.config(text="Processing...")
-        
-        return recognition.match_id_face("./id.jpg", "./snapshot.jpg")
 
     def update(self):
         ret, frame = self.cap.read()
