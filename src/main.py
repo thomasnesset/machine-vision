@@ -26,7 +26,7 @@ if __name__ == "__main__":
         files = [file for file in template_path.iterdir() if file.is_file()]
         matched_id = []
         image = cv2.imread(args.id_image)
-        if not image_verification.quality(image):
+        if not image_verification.quality(image, 500):
             print("Image quality for ID card is too low.", file=sys.stderr)
             exit()
 
